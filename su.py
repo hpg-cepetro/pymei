@@ -2,7 +2,7 @@ import numpy as np
 from ctypes import Structure, c_int, c_short, c_float, c_ushort
 
 
-class TraceHeader(Structure):
+class SUTraceHeader(Structure):
     _fields_ = [("tracl", c_int),
                 ("tracr", c_int),
                 ("fldr", c_int),
@@ -94,7 +94,7 @@ class SU(object):
             self.stream = stream
 
     def readTrace(self):
-        header = TraceHeader()
+        header = SUTraceHeader()
         size = self.stream.readinto(header)
         if size is not None and size > 0:
             tdata = (c_float * header.ns)()
