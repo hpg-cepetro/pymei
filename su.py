@@ -142,3 +142,18 @@ class Trace(object):
     def sy(self):
         return self.header.sy * self.mult
 
+    @property
+    def mx(self):
+        return (self.header.gx + self.header.sx) * 0.5 * self.mult
+
+    @property
+    def my(self):
+        return (self.header.gy + self.header.sy) * 0.5 * self.mult
+
+    @property
+    def hx(self):
+        return (self.header.gx - self.header.sx) * 0.5 * self.mult
+
+    @property
+    def hy(self):
+        return (self.header.gy - self.header.sy) * 0.5 * self.mult
