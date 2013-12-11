@@ -142,16 +142,3 @@ class Trace(object):
     def sy(self):
         return self.header.sy * self.mult
 
-
-if __name__ == "__main__":
-    d = '/opt/repo-processamento/dados-desenvolvimento/data/'
-    sy = []
-    gy = []
-
-    for t in SU(d + 'simple-syntetic-micro.su'):
-        sy.append(t.sy)
-        gy.append(t.gy)
-
-    import matplotlib.pyplot as plt
-    plt.scatter(sy, gy)
-    plt.show()
