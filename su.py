@@ -86,12 +86,27 @@ class SUTraceHeader(Structure):
                 ("unass", c_short * 14)]
 
 
-class SU(object):
+class SeimicData(object):
     def __init__(self, stream):
         if type(stream) == str:
             self.stream = open(stream, 'rb')
         else:
             self.stream = stream
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        t = self.readTrace()
+        if t is not None:
+            return t
+        else:
+            raise StopIteration
+
+
+class SU(SeimicData):
+    def __init__(self, stream):
+        super(SU, self).__init__(stream)
 
     def readTrace(self):
         header = SUTraceHeader()
@@ -103,16 +118,6 @@ class SU(object):
             return Trace(header, data)
         else:
             return None
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        t = self.readTrace()
-        if t is not None:
-            return t
-        else:
-            raise StopIteration
 
 
 class Trace(object):
