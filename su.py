@@ -120,6 +120,19 @@ class SU(SeimicData):
             return None
 
 
+class SEGY(SeimicData):
+    def __init__(self, stream):
+        super(SEGY, self).__init__(stream)
+        self.read_segy_headers = False
+        self.textual_header = None
+        self.binary_header = None
+
+    def readTrace(self):
+        if not self.read_segy_headers:
+            self.textual_header = self.stream.read(3200)
+            self.stream.readinto(self.binary_header)
+
+
 class Trace(object):
     def __init__(self, header, data):
         self.header = header
