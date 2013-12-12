@@ -296,3 +296,15 @@ class Trace(object):
     @property
     def hy(self):
         return (self.header.gy - self.header.sy) * 0.5 * self.mult
+
+    @property
+    def cdp(self):
+        return self.header.cdp
+
+    @property
+    def ns(self):
+        return self.header.ns
+
+    @property
+    def dt(self):
+        return float(self.header.dt) / 1000000
