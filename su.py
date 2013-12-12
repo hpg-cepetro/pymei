@@ -1,8 +1,9 @@
 import numpy as np
-from ctypes import Structure, c_int, c_short, c_float, c_ushort
+from ctypes import Structure, c_int, c_short, c_float, c_ushort, c_long, c_char
+
 
 class SEGYTraceHeader (Structure):
-     _fields_ = [('tracl', c_int),
+    _fields_ = [('tracl', c_int),
                 ('tracr', c_int),
                 ('fldr', c_int),
                 ('tracf', c_int),
@@ -93,35 +94,37 @@ class SEGYTraceHeader (Structure):
                 ('SourceMeasurementUnit', c_short),
                 ('UnassignedLong', c_long)]
 
+
 class BinaryHeader (Structure):
     _fields_ = [('jobid', c_int),
-               ('lino', c_int),
-               ('reno', c_int),
-               ('ntrpt', c_short),
-               ('nart', c_short),
-               ('hdt', c_ushort),
-               ('dto', c_ushort),
-               ('hns', c_ushort),
-               ('nso', c_ushort),
-               ('format', c_short),
-               ('fold', c_short),
-               ('tsort', c_short),
-               ('vscode', c_short),
-               ('hsfs', c_short),
-               ('hsfe', c_short),
-               ('hslen', c_short),
-               ('hstyp', c_short),
-               ('schn', c_short),
-               ('hstas', c_short),
-               ('hstae', c_short),
-               ('htatyp', c_short),
-               ('hcorr', c_short),
-               ('bgrcv', c_short),
-               ('rcvm', c_short),
-               ('mfeet', c_short),
-               ('polyt', c_short),
-               ('vpol', c_short),
-               ('Unsigned340', c_char*340)]
+                ('lino', c_int),
+                ('reno', c_int),
+                ('ntrpt', c_short),
+                ('nart', c_short),
+                ('hdt', c_ushort),
+                ('dto', c_ushort),
+                ('hns', c_ushort),
+                ('nso', c_ushort),
+                ('format', c_short),
+                ('fold', c_short),
+                ('tsort', c_short),
+                ('vscode', c_short),
+                ('hsfs', c_short),
+                ('hsfe', c_short),
+                ('hslen', c_short),
+                ('hstyp', c_short),
+                ('schn', c_short),
+                ('hstas', c_short),
+                ('hstae', c_short),
+                ('htatyp', c_short),
+                ('hcorr', c_short),
+                ('bgrcv', c_short),
+                ('rcvm', c_short),
+                ('mfeet', c_short),
+                ('polyt', c_short),
+                ('vpol', c_short),
+                ('Unsigned340', c_char*340)]
+
 
 class SUTraceHeader(Structure):
     _fields_ = [("tracl", c_int),
