@@ -1,8 +1,9 @@
 import numpy as np
-from ctypes import Structure, c_int, c_short, c_float, c_ushort, c_long, c_char
+from ctypes import Structure, BigEndianStructure
+from ctypes import c_int, c_short, c_float, c_ushort, c_long, c_char
 
 
-class SEGYTraceHeader (Structure):
+class SEGYTraceHeader (BigEndianStructure):
     _fields_ = [('tracl', c_int),
                 ('tracr', c_int),
                 ('fldr', c_int),
@@ -95,7 +96,7 @@ class SEGYTraceHeader (Structure):
                 ('UnassignedLong', c_long)]
 
 
-class BinaryHeader (Structure):
+class BinaryHeader (BigEndianStructure):
     _fields_ = [('jobid', c_int),
                 ('lino', c_int),
                 ('reno', c_int),
