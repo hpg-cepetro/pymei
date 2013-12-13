@@ -254,8 +254,20 @@ class SEGY(SeimicData):
 
     def readTrace(self):
         if not self.read_segy_headers:
-            self.textual_header = self.stream.read(3200)
+            from codecs import decode
+            s = self.stream.read(3200)
+            self.textual_header = decode(s, 'cp500')
             self.stream.readinto(self.binary_header)
+            self.read_segy_headers = True
+        header = SEGYTraceHeader()
+        size = self.stream.readinto(header)
+        if size is not None and size > 0:
+            tdata = (c_float * header.ns)()
+            self.stream.readinto(tdata)
+            data = np.ctypeslib.as_array(tdata)
+            return Trace(header, data)
+        else:
+            return None
 
 
 class Trace(object):
