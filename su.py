@@ -277,7 +277,7 @@ class Trace(object):
         if header.scalco > 0:
             self.mult = header.scalco
         elif header.scalco < 0:
-            self.mult = 1 / header.scalco
+            self.mult = -1 / header.scalco
         else:
             self.mult = 1
 
