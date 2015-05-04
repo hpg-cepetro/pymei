@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 from ctypes import Structure, BigEndianStructure
 from ctypes import c_int32, c_int16, c_float, c_uint16, c_char
@@ -209,6 +210,13 @@ class SeimicData(object):
         return self
 
     def __next__(self):
+        t = self.readTrace()
+        if t is not None:
+            return t
+        else:
+            raise StopIteration
+
+    def next(self):
         t = self.readTrace()
         if t is not None:
             return t
