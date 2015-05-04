@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+import matplotlib.pyplot as plt
+import numpy as np
+import pymei
+import sys
+
+path = sys.argv[1]
+data = pymei.load(path)
+M = np.array([(tr.mx, tr.my) for tr in data])
+plt.scatter(M[:, 0], M[:, 1])
+plt.show()
