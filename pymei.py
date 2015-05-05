@@ -79,9 +79,9 @@ class SEGYTraceHeader (BigEndianStructure):
                 ('otrav', c_int16),
                 ('cdpx', c_int32),
                 ('cdpy', c_int32),
-                ('Inline3D', c_int32),
-                ('Crossline3D', c_int32),
-                ('Unassigned', c_char*44)]
+                ('iline', c_int32),
+                ('xline', c_int32),
+                ('unass', c_char*44)]
 
 
 class BinaryHeader (BigEndianStructure):
@@ -112,7 +112,7 @@ class BinaryHeader (BigEndianStructure):
                 ('mfeet', c_int16),
                 ('polyt', c_int16),
                 ('vpol', c_int16),
-                ('Unsigned340', c_char*340)]
+                ('unass', c_char*340)]
 
 
 class SUTraceHeader(Structure):
