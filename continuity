@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+import matplotlib.pyplot as plt
+import numpy as np
+import pymei
+import sys
+
+path = sys.argv[1]
+data = pymei.load(path)
+cdps = [tr.cdp for tr in data]
+
+if len(cdps) == 0:
+    print("File has no traces!")
+    exit(1)
+
+continuous = True
+increasing = True
+repeated = False
+
+lastcdp = cdps[0]
+for cdp in cdps[1:]:
+    if cdp < lastcdp:
+        increasing = False
+    lastcdp = cdp
+
+scdps = sorted(cdps)
+lastcdp = cdps[0]
+for cdp in cdps[1:]:
+    if cdp != lastcdp + 1:
+        continuous = False
+    if cdp == lastcdp:
+        repeated = True
+    lastcdp = cdp
+
+print("File has %d cdps ranging from %d to %d." % (len(cdps), scdps[0], scdps[-1]))
+print("File has %sstrictly increasing cdp indices." % ("" if increasing else "not "))
+print("File has %scontiuous cdp indices." % ("" if continuous else "not "))
+print("File has %srepeated cdp indices." % ("" if repeated else "not "))
+
+exit(0)
