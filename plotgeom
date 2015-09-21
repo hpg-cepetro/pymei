@@ -2,10 +2,24 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pymei
-import sys
+import argparse
 
-path = sys.argv[1]
-data = pymei.load(path)
-M = np.array([(tr.mx, tr.my) for tr in data])
-plt.scatter(M[:, 0], M[:, 1])
+parser = argparse.ArgumentParser(description="Plots midpoints of a data as points in space")
+parser.add_argument('data', metavar='DATA', type=str, nargs=1, help='path for a seismic files')
+parser.add_argument('-r', dest='ang', metavar='ANGLE', type=float, \
+        default=0, help='rotate the coordinate system clock-wise')
+args = parser.parse_args()
+
+ang = args.ang * np.pi / 180
+
+# Clock-wise rotation matrix
+rot = np.array([
+    [ np.cos(ang), np.sin(ang)],
+    [-np.sin(ang), np.cos(ang)]])
+
+for path in args.data:
+    data = pymei.load(path)
+    M = np.array([(tr.mx, tr.my) for tr in data])
+    M = rot.dot(M.T)
+    plt.scatter(M[0, :], M[1, :])
 plt.show()
