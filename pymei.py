@@ -227,6 +227,7 @@ class SeimicData(object):
 class SU(SeimicData):
     def __init__(self, stream):
         super(SU, self).__init__(stream)
+        self.fof = 0
 
     def readTrace(self):
         header = SUTraceHeader()
@@ -235,7 +236,9 @@ class SU(SeimicData):
             tdata = (c_float * header.ns)()
             self.stream.readinto(tdata)
             data = np.ctypeslib.as_array(tdata)
-            return Trace(header, data)
+            fof = self.fof
+            self.fof += size + header.ns * 4
+            return Trace(header, data, fof)
         else:
             return None
 
@@ -247,6 +250,7 @@ class SEGY(SeimicData):
         v = [s[i:i+80] for i in range(0, len(s), 80)]
         self.textual_header = "\n".join(v)
         self.binary_header = self.stream.read(400)
+        self.fof = 3200 + 400
 
     def readTrace(self):
         header = SEGYTraceHeader()
@@ -255,7 +259,9 @@ class SEGY(SeimicData):
             tdata = (c_float * header.ns)()
             self.stream.readinto(tdata)
             data = np.ctypeslib.as_array(tdata)
-            return Trace(header, data)
+            fof = self.fof
+            self.fof += size + header.ns * 4
+            return Trace(header, data, fof)
         else:
             return None
 
@@ -268,9 +274,10 @@ def load(path):
 
 
 class Trace(object):
-    def __init__(self, header, data):
+    def __init__(self, header, data, fof):
         self.header = header
         self.data = data
+        self.fof = fof
         if header.scalco > 0:
             self.mult = header.scalco
         elif header.scalco < 0:

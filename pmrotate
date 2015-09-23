@@ -1,0 +1,35 @@
+#!/usr/bin/python3
+import pymei as pm
+import numpy as np
+import sys
+from ctypes import c_int32
+
+if len(sys.argv) != 3:
+    sys.stderr.write("Usage: pmrot ANGLE PATH\n")
+    sys.stderr.write("Rotates PATH clock-wise by ANGLE degrees\n")
+    sys.exit(1)
+
+angle = float(sys.argv[1]) * np.pi / 180
+path = sys.argv[2]
+stream = open(path, "r+b")
+
+if path.endswith(".su"):
+    data = pm.SU(stream)
+else:
+    data = pm.SEGY(stream)
+
+rot = np.array([
+    [ np.cos(angle), np.sin(angle)],
+    [-np.sin(angle), np.cos(angle)]])
+
+for tr in data:
+    save = stream.tell()
+    sx, sy = rot.dot([tr.header.sx, tr.header.sy])
+    gx, gy = rot.dot([tr.header.gx, tr.header.gy])
+    stream.seek(tr.fof)
+    tr.header.sx = int(round(sx))
+    tr.header.sy = int(round(sy))
+    tr.header.gx = int(round(gx))
+    tr.header.gy = int(round(gy))
+    stream.write(tr.header)
+    stream.seek(save)
