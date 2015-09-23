@@ -8,5 +8,7 @@ setup(name='pymei',
         py_modules=['pymei'],
         scripts=[
             'pmgeometry',
-            'pmrotate'],
+            'pmrotate',
+            'pmcontinuity',
+            'pmrange'],
         )

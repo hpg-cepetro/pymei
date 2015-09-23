@@ -1,0 +1,32 @@
+#!/usr/bin/python3
+import pymei as pm
+import sys
+from collections import OrderedDict
+
+path = sys.argv[1]
+data = pm.load(path)
+minmax = OrderedDict()
+
+keys = ["gx", "gy", "sx", "sy",
+        "mx", "my", "hx", "hy",
+        "cdp", "ns", "dt"]
+ntrs = 0
+
+for tr in data:
+    ntrs += 1
+    for key in keys:
+        v = getattr(tr, key)
+        if key not in minmax:
+            minmax[key] = (v, v, v, v)
+        else:
+            a, b, c, _ = minmax[key]
+            if v < a:
+                a = v
+            elif v > b:
+                b = v
+            minmax[key] = (a, b, c, v)
+
+print(path)
+print("{} traces".format(ntrs))
+for k, (a, b, c, d) in minmax.items():
+    print("{}\tmin: {} max: {} first: {} last: {}".format(k, a, b, c, d))
