@@ -28,6 +28,7 @@ for tr in data:
 
 print(path)
 print("{} traces".format(ntrs))
+print(data.info())
 for k, (a, b, c, d) in minmax.items():
     if a == b:
         print("{}\t{}".format(k, a))
