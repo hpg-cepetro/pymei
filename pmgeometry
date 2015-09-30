@@ -19,7 +19,10 @@ rot = np.array([
 
 for path in args.data:
     data = pymei.load(path)
-    M = np.array([(tr.mx, tr.my) for tr in data])
+    I = np.array([(tr.mx, tr.my, tr.cdp) for tr in data])
+    M = I[:, 0:2]
     M = rot.dot(M.T)
-    plt.scatter(M[0, :], M[1, :])
+    cdp = I[:, 2]
+    plt.scatter(M[0, :], M[1, :], marker='x', c=cdp)
+    plt.colorbar()
 plt.show()
