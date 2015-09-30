@@ -232,6 +232,10 @@ class SU(SeimicData):
     def info(self):
         return ""
 
+    def rewind(self):
+        self.fof = 0
+        self.stream.seek(self.fof)
+
     def readTrace(self):
         header = SUTraceHeader()
         size = self.stream.readinto(header)
@@ -258,6 +262,10 @@ class SEGY(SeimicData):
 
     def info(self):
         return self.textual_header
+
+    def rewind(self):
+        self.fof = 3200 + 400
+        self.stream.seek(self.fof)
 
     def readTrace(self):
         header = SEGYTraceHeader()
