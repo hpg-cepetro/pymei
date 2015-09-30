@@ -84,7 +84,7 @@ class SEGYTraceHeader (BigEndianStructure):
                 ('unass', c_char*44)]
 
 
-class BinaryHeader (BigEndianStructure):
+class SEGYBinaryHeader (BigEndianStructure):
     _fields_ = [('jobid', c_int32),
                 ('lino', c_int32),
                 ('reno', c_int32),
@@ -229,6 +229,9 @@ class SU(SeimicData):
         super(SU, self).__init__(stream)
         self.fof = 0
 
+    def info(self):
+        return ""
+
     def readTrace(self):
         header = SUTraceHeader()
         size = self.stream.readinto(header)
@@ -249,8 +252,12 @@ class SEGY(SeimicData):
         s = decode(self.stream.read(3200), 'cp500')
         v = [s[i:i+80] for i in range(0, len(s), 80)]
         self.textual_header = "\n".join(v)
-        self.binary_header = self.stream.read(400)
+        self.binary_header = SEGYBinaryHeader()
+        self.stream.readinto(self.binary_header)
         self.fof = 3200 + 400
+
+    def info(self):
+        return self.textual_header
 
     def readTrace(self):
         header = SEGYTraceHeader()
