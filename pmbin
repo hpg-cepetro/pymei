@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+import pymei as pm
+import sys
+import numpy as np
+
+dx, ox = map(float, sys.argv[1].split(','))
+dy, oy = map(float, sys.argv[2].split(','))
+alpha = float(sys.argv[3]) * np.pi / 180
+path = sys.argv[4]
+stream = open(path, "r+b")
+if path.endswith(".su"):
+    data = pm.SU(stream)
+else:
+    data = pm.SEGY(stream)
+
+rot = np.array([
+    [ np.cos(alpha), np.sin(alpha)],
+    [-np.sin(alpha), np.cos(alpha)]])
+
+M = np.array([(tr.mx, tr.my) for tr in data])
+n = M.shape[0]
+M = M.dot(rot.T)
+
+print("Data {} has {} traces".format(path, n))
+
+cdp = {}
+for i in range(n):
+    x, y = M[i, :]
+    b = int((y - oy) / dy)
+    a = int((x - ox) / dx)
+    cdp[b, a] = i
+keys = sorted(cdp.keys())
+
+k = 0
+icdp = [0] * n
+for key in keys:
+    i = cdp[key]
+    icdp[i] = k
+    k += 1
+
+data.rewind()
+for i, tr in enumerate(data):
+    save = stream.tell()
+    stream.seek(tr.fof)
+    tr.header.cdp = icdp[i]
+    stream.write(tr.header)
+    stream.seek(save)

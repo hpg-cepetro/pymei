@@ -10,5 +10,6 @@ setup(name='pymei',
             'pmgeometry',
             'pmrotate',
             'pmcontinuity',
-            'pmrange'],
+            'pmrange',
+            'pmbin'],
         )
