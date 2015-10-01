@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+import pymei as pm
+import sys
+from operator import attrgetter
+import random
+
+keys = sys.argv[1].split(',')
+path = sys.argv[2]
+data = pm.load(path)
+
+if keys[0] == "shuffle":
+    trs = [tr for tr in data]
+    random.shuffle(trs)
+else:
+    trs = sorted([tr for tr in data], key=attrgetter(*keys))
+
+output = sys.stdout.buffer
+
+for tr in trs:
+    output.write(tr.header)
+    output.write(tr.data)

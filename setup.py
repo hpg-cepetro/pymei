@@ -11,5 +11,6 @@ setup(name='pymei',
             'pmrotate',
             'pmcontinuity',
             'pmrange',
-            'pmbin'],
+            'pmbin',
+            'pmsort'],
         )
