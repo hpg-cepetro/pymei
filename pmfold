@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+import pymei as pm
+import sys
+from collections import defaultdict
+import matplotlib.pyplot as plt
+from os.path import basename
+
+path = sys.argv[1]
+data = pm.load(path)
+count = defaultdict(int)
+
+for tr in data:
+    count[tr.cdp] += 1
+
+x = list(count.keys())
+y = list(count.values())
+plt.plot(x, y)
+plt.title('Fold per CDP in {}'.format(basename(path)))
+plt.xlabel('CDP')
+plt.ylabel('Fold')
+plt.show()

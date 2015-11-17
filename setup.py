@@ -12,5 +12,7 @@ setup(name='pymei',
             'pmcontinuity',
             'pmrange',
             'pmbin',
-            'pmsort'],
+            'pmsort',
+            'pmfold',
+            'pmmax'],
         )
