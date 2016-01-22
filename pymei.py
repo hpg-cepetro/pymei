@@ -1,7 +1,7 @@
 from __future__ import division
 import numpy as np
 from ctypes import Structure, BigEndianStructure
-from ctypes import c_int32, c_int16, c_float, c_uint16, c_char
+from ctypes import c_int32, c_uint32, c_int16, c_float, c_uint16, c_char, c_double
 from codecs import decode
 
 
@@ -268,11 +268,50 @@ class SEGY(SeimicData):
         self.stream.seek(self.fof)
 
     def readTrace(self):
+        if self.binary_header.format == 1:
+            return self.readTraceIBMFloat()
+        elif self.binary_header.format == 2:
+            raise Exception('4-byte, two\'s complement integer not implemented')
+        elif self.binary_header.format == 3:
+            raise Exception('2-byte, two\'s complement integer not implemented')
+        elif self.binary_header.format == 4:
+            raise Exception('4-byte fixed-point with gain not implemented')
+        elif self.binary_header.format == 5:
+            return self.readTraceIEEEFloat()
+        elif self.binary_header.format == 8:
+            raise Exception('1-byte, two\'s complement integer not implemented')
+        else:
+            raise Exception('Unknown data format "%s"' % str(self.binary_header.format))
+    
+    def readTraceIEEEFloat(self):
         header = SEGYTraceHeader()
         size = self.stream.readinto(header)
         if size is not None and size > 0:
             tdata = (c_float * header.ns)()
             self.stream.readinto(tdata)
+            data = np.ctypeslib.as_array(tdata)
+            fof = self.fof
+            self.fof += size + header.ns * 4
+            return Trace(header, data, fof)
+        else:
+            return None
+
+    def readTraceIBMFloat(self):
+        header = SEGYTraceHeader()
+        size = self.stream.readinto(header)
+        if size is not None and size > 0:
+            tdata = (c_uint32 * header.ns)()
+            self.stream.readinto(tdata)
+            s = np.bitwise_and(tdata, 0x80) >> 7
+            b1 = np.bitwise_and(tdata, 0x7F)
+            b2 = np.bitwise_and(tdata, 0xFF00) >> 8
+            b3 = np.bitwise_and(tdata, 0xFF0000) >> 16
+            b4 = np.bitwise_and(tdata, 0xFF000000) >> 24
+            tdata = (1-2*s.astype(c_double)) * (
+                     (b2.astype(c_double) + (
+                      b3.astype(c_double) + 
+                      b4.astype(c_double) / 2**8) / 2**8) * 
+                    16**(b1.astype(c_double)-64-2) )
             data = np.ctypeslib.as_array(tdata)
             fof = self.fof
             self.fof += size + header.ns * 4
