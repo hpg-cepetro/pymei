@@ -84,6 +84,184 @@ class SEGYTraceHeader (BigEndianStructure):
                 ('unass', c_char*44)]
 
 
+class SEGYLGATraceHeader (BigEndianStructure):
+    _fields_ = [('tracl',    c_int32),
+                ('tracr',    c_int32),
+                ('fldr',     c_int32),
+                ('tracf',    c_int32),
+                ('ep',       c_int32),
+                ('cdp',      c_int32),
+                ('cdpt',     c_int32),
+                ('trid',     c_int16),
+                ('nvs',      c_int16),
+                ('nhs',      c_int16),
+                ('duse',     c_int16),
+                ('offset',   c_int32),
+                ('gelev',    c_int32),
+                ('selev',    c_int32),
+                ('sdepth',   c_int32),
+                ('gdel',     c_int32),
+                ('sdel',     c_int32),
+                ('prfAFont', c_int32),
+                ('profRecp', c_int32),
+                ('scalel',   c_int16),
+                ('scalco',   c_int16),
+                ('sx',       c_int32),
+                ('sy',       c_int32),
+                ('gx',       c_int32),
+                ('gy',       c_int32),
+                ('uniCoor',  c_int16),
+                ('velWth',   c_int16),
+                ('velSWth',  c_int16),
+                ('upholeF',  c_int16),
+                ('upholeR',  c_int16),
+                ('cEstatF',  c_int16),
+                ('cEstatR',  c_int16),
+                ('estatApl', c_int16),
+                ('timeBkA',  c_int16),
+                ('timeBkB',  c_int16),
+                ('tmpPrAmt', c_int16),
+                ('tmpInMut', c_int16),
+                ('tmpFiMut', c_int16),
+                ('ns',       c_int16),
+                ('dt',       c_int16),
+                ('tipoGan',  c_int16),
+                ('ganCnstI', c_int16),
+                ('ganInicI', c_int16),
+                ('fltrcorr', c_int16),
+                ('fIniSw',   c_int16),
+                ('fFinSw',   c_int16),
+                ('compSw',   c_int16),
+                ('tipoSw',   c_int16),
+                ('tmpIniSw', c_int16),
+                ('tmpFinSw', c_int16),
+                ('tipoRamp', c_int16),
+                ('freqFlt',  c_int16),
+                ('slopFlt',  c_int16),
+                ('frqfltn',  c_int16),
+                ('frqSlpN',  c_int16),
+                ('frqBaixa', c_int16),
+                ('frqAlta',  c_int16),
+                ('slpCBaix', c_int16),
+                ('slpCAlta', c_int16),
+                ('ano',      c_int16),
+                ('dia',      c_int16),
+                ('hora',     c_int16),
+                ('minuto',   c_int16),
+                ('segundos', c_int16),
+                ('tipData',  c_int16),
+                ('fatTrc',   c_int16),
+                ('nEstPos1', c_int16),
+                ('nEstTrcI', c_int16),
+                ('nEstTrcF', c_int16),
+                ('gapSize',  c_int16),
+                ('dirLine',  c_int16),
+                ('cdpx',     c_float),
+                ('cdpy',     c_float),
+                ('elevCmp',  c_int32),
+                ('iline',    c_int32),
+                ('xline',    c_int32),
+                ('pick',     c_int32),
+                ('estRecp',  c_int32),
+                ('estFont',  c_int32),
+                ('lineRecp', c_int32),
+                ('lineFont', c_int32),
+                ('cdfDatum', c_int32),
+                ('nrTiroF',  c_float),
+                ('byte229',  c_float),
+                ('byte233',  c_int32),
+                ('byte237',  c_float)]
+
+
+class SEGYBRTraceHeader (BigEndianStructure):
+    _fields_ = [('tracl',    c_int32),
+                ('tracr',    c_int32),
+                ('fldr',     c_int32),
+                ('tracf',    c_int32),
+                ('ep',       c_int32),
+                ('cdp',      c_int32),
+                ('cdpt',     c_int32),
+                ('trid',     c_int16),
+                ('nvs',      c_int16),
+                ('nhs',      c_int16),
+                ('duse',     c_int16),
+                ('offset',   c_int32),
+                ('gelev',    c_int32),
+                ('selev',    c_int32),
+                ('sdepth',   c_int32),
+                ('gdel',     c_int32),
+                ('sdel',     c_int32),
+                ('prfAFont', c_int32),
+                ('profRecp', c_int32),
+                ('scalel',   c_int16),
+                ('scalco',   c_int16),
+                ('sx',       c_int32),
+                ('sy',       c_int32),
+                ('gx',       c_int32),
+                ('gy',       c_int32),
+                ('uniCoor',  c_int16),
+                ('velWth',   c_int16),
+                ('velSWth',  c_int16),
+                ('upholeF',  c_int16),
+                ('upholeR',  c_int16),
+                ('cEstatF',  c_int16),
+                ('cEstatR',  c_int16),
+                ('estatApl', c_int16),
+                ('timeBkA',  c_int16),
+                ('timeBkB',  c_int16),
+                ('tmpPrAmt', c_int16),
+                ('tmpInMut', c_int16),
+                ('tmpFiMut', c_int16),
+                ('ns',       c_int16),
+                ('dt',       c_int16),
+                ('tipoGan',  c_int16),
+                ('ganCnstI', c_int16),
+                ('ganInicI', c_int16),
+                ('fltrcorr', c_int16),
+                ('fIniSw',   c_int16),
+                ('fFinSw',   c_int16),
+                ('compSw',   c_int16),
+                ('tipoSw',   c_int16),
+                ('tmpIniSw', c_int16),
+                ('tmpFinSw', c_int16),
+                ('tipoRamp', c_int16),
+                ('freqFlt',  c_int16),
+                ('slopFlt',  c_int16),
+                ('frqfltn',  c_int16),
+                ('frqSlpN',  c_int16),
+                ('frqBaixa', c_int16),
+                ('frqAlta',  c_int16),
+                ('slpCBaix', c_int16),
+                ('slpCAlta', c_int16),
+                ('ano',      c_int16),
+                ('dia',      c_int16),
+                ('hora',     c_int16),
+                ('minuto',   c_int16),
+                ('segundos', c_int16),
+                ('tipData',  c_int16),
+                ('fatTrc',   c_int16),
+                ('nEstPos1', c_int16),
+                ('nEstTrcI', c_int16),
+                ('nEstTrcF', c_int16),
+                ('gapSize',  c_int16),
+                ('dirLine',  c_int16),
+                ('cdpx',     c_int32),
+                ('cdpy',     c_int32),
+                ('elevCmp',  c_int32),
+                ('iline',    c_int32),
+                ('xline',    c_int32),
+                ('pick',     c_int32),
+                ('estRecp',  c_int32),
+                ('estFont',  c_int32),
+                ('lineRecp', c_int32),
+                ('lineFont', c_int32),
+                ('cdfDatum', c_int32),
+                ('nrTiroF',  c_float),
+                ('byte229',  c_float),
+                ('byte233',  c_int32),
+                ('byte237',  c_float)]
+
+
 class SEGYBinaryHeader (BigEndianStructure):
     _fields_ = [('jobid', c_int32),
                 ('lino', c_int32),
@@ -251,7 +429,7 @@ class SU(SeimicData):
 
 
 class SEGY(SeimicData):
-    def __init__(self, stream):
+    def __init__(self, stream, hdr=SEGYTraceHeader):
         super(SEGY, self).__init__(stream)
         s = decode(self.stream.read(3200), 'cp500')
         v = [s[i:i+80] for i in range(0, len(s), 80)]
@@ -259,6 +437,7 @@ class SEGY(SeimicData):
         self.binary_header = SEGYBinaryHeader()
         self.stream.readinto(self.binary_header)
         self.fof = 3200 + 400
+        self.hdr = hdr
 
     def info(self):
         return self.textual_header
@@ -284,7 +463,7 @@ class SEGY(SeimicData):
             raise Exception('Unknown data format "%s"' % str(self.binary_header.format))
     
     def readTraceIEEEFloat(self):
-        header = SEGYTraceHeader()
+        header = self.hdr()
         size = self.stream.readinto(header)
         if size is not None and size > 0:
             tdata = (c_float * header.ns)()
@@ -297,7 +476,7 @@ class SEGY(SeimicData):
             return None
 
     def readTraceIBMFloat(self):
-        header = SEGYTraceHeader()
+        header = self.hdr()
         size = self.stream.readinto(header)
         if size is not None and size > 0:
             tdata = (c_uint32 * header.ns)()
