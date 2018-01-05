@@ -14,6 +14,9 @@ for tr in data:
 
 x = list(count.keys())
 y = list(count.values())
+
+print(sum(y)/len(y))
+
 plt.plot(x, y)
 plt.title('Fold per CDP in {}'.format(basename(path)))
 plt.xlabel('CDP')
