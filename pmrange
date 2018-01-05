@@ -6,6 +6,7 @@ from collections import OrderedDict
 path = sys.argv[1]
 data = pm.load(path)
 minmax = OrderedDict()
+cdps = set()
 
 keys = ["gx", "gy", "sx", "sy",
         "mx", "my", "hx", "hy",
@@ -14,6 +15,7 @@ ntrs = 0
 
 for tr in data:
     ntrs += 1
+    cdps.add(tr.cdp)
     for key in keys:
         v = getattr(tr, key)
         if key not in minmax:
@@ -28,6 +30,8 @@ for tr in data:
 
 print(path)
 print("{} traces".format(ntrs))
+print("{} cdps".format(len(cdps)))
+
 print(data.info())
 for k, (a, b, c, d) in minmax.items():
     if a == b:
