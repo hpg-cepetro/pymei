@@ -1,0 +1,290 @@
+#!/usr/bin/env python3
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pymei
+import argparse
+
+
+###############################################################################
+# Parse the command line arguments
+###############################################################################
+
+parser = argparse.ArgumentParser(description="Plots midpoints of a data as points in space")
+parser.add_argument('data', metavar='DATA', type=str, nargs=1, help='Path to a seismic file')
+parser.add_argument('-az', dest='ang', metavar='ANGLE', type=float, \
+        default=0, help='Rotate the coordinate system clock-wise')
+parser.add_argument('-p', dest='pick_points', action='store_true', \
+        default=False, help='Enable point picking')
+parser.add_argument('-w', dest='show_wiggle', action='store_true', \
+        default=False, help='Display a wiggle plot for the selected trace (implies -p)')
+
+args = parser.parse_args()
+
+if args.show_wiggle:
+    args.pick_points = True
+
+
+###############################################################################
+# Clock-wise rotation matrix
+###############################################################################
+
+ang = -args.ang * np.pi / 180
+
+rot = np.array([
+    [ np.cos(ang), np.sin(ang)],
+    [-np.sin(ang), np.cos(ang)]])
+
+
+###############################################################################
+# Global variables
+###############################################################################
+
+fig = None
+
+point_data = []
+selected_point = -1
+
+point_plot = None
+point_ax = None
+
+wiggle_plot = None
+wiggle_ax = None
+
+
+###############################################################################
+# Print selected point when clicked
+###############################################################################
+
+def print_point():
+
+    point = point_data[selected_point]
+    x, y, mx, my, hx, hy = point[0:6]
+    cdp, fof, i, j = point[6:10]
+
+    print("I=%d, CDP=%d, MX=%f, MY=%f, HX=%f, HY=%f, TID=%d, TOF=%d" % 
+        (j, cdp, mx, my, hx, hy, i, fof))
+
+
+###############################################################################
+# Print selected sample when clicked
+###############################################################################
+
+def print_sample(py):
+
+    tr = data.readTrace(int(point_data[selected_point][7]))
+    s = int(py // tr.dt)
+
+    if s < tr.ns:
+        print("TIME=%f SAMPLE=%d AMPLITUDE=%f" % (py,s,tr.data[s]))
+
+
+###############################################################################
+# Set the red marker from the selected point
+###############################################################################
+
+def update_point():
+
+    global point_plot
+
+    point = point_data[selected_point]
+    x, y = point[0:2]
+
+    point_plot, = point_ax.plot([x], [y], marker='o', c='red')
+
+
+###############################################################################
+# Update the wiggle plot from the selected point
+###############################################################################
+
+def update_wiggle():
+
+    global wiggle_plot
+
+    if not args.show_wiggle:
+        return
+
+    tr = data.readTrace(int(point_data[selected_point][7]))
+    y = tr.dt * np.arange(tr.ns)
+    x = tr.data
+
+    wiggle_plot, = wiggle_ax.plot(x, y, c='black')   
+
+    wiggle_ax.set_ylim([0, tr.dt * tr.ns])
+    wiggle_ax.invert_yaxis()
+
+
+###############################################################################
+# Update the plotting canvas
+###############################################################################
+
+def update_all():
+    
+    global selected_point
+
+    if selected_point != None:
+
+        if selected_point < 0:
+            selected_point = len(point_data) - 1
+        elif selected_point >= len(point_data):
+            selected_point = 0
+
+        print_point()
+        update_point()
+        update_wiggle()
+
+    fig.canvas.draw()
+
+    if selected_point == None:
+        selected_point = -1
+
+
+###############################################################################
+# Find the nearest point to a position
+###############################################################################
+
+def find_nearest_point(px, py):
+
+    dmin = -1
+    jmin = -1
+
+    for point_idx, point in enumerate(point_data):
+
+        x, y = point[0:2]
+        d = (x-px)**2 + (y-py)**2
+
+        if dmin < 0 or d < dmin:
+
+            dmin = d
+            jmin = point_idx
+
+    return jmin
+
+###############################################################################
+# Key press event
+###############################################################################
+
+def key_press(event):
+
+    global point_data
+    global selected_point
+    global point_plot
+    global fig
+    global wiggle_plot
+
+    if len(point_data) == 0:
+        return
+
+    if point_plot != None:
+        point_plot.remove()
+        point_plot = None
+
+    if wiggle_plot != None:
+        wiggle_plot.remove()
+        wiggle_plot = None
+
+    if selected_point < 0:
+        selected_point = 0
+    else:
+        if event.key == 'right':
+            selected_point += 1
+        elif event.key == 'left':
+            selected_point -= 1
+        elif event.key == 'up':
+            selected_point += len(point_data) // 20
+        elif event.key == 'down':
+            selected_point -= len(point_data) // 20
+        elif event.key == 'escape':
+            selected_point = None
+        else:
+            return
+
+    update_all()
+
+
+###############################################################################
+# Mouse press event
+###############################################################################
+
+def mouse_press(event):
+
+    global point_data
+    global selected_point
+    global point_plot
+    global fig
+    global wiggle_plot
+
+    px = event.xdata
+    py = event.ydata
+
+    if px == None or py == None:
+        return
+
+    if event.inaxes == None:
+        return
+
+    if event.inaxes == wiggle_ax and wiggle_ax != None:
+
+        print_sample(py)
+
+    elif event.inaxes == point_ax:
+
+        jmin = find_nearest_point(px, py)
+
+        if jmin < 0:
+            return
+
+        if point_plot != None:
+            point_plot.remove()
+            point_plot = None
+
+        if wiggle_plot != None:
+            wiggle_plot.remove()
+            wiggle_plot = None
+
+        selected_point = jmin
+
+        update_all()
+
+
+###############################################################################
+# Initialize program
+###############################################################################
+
+fig = plt.figure()
+
+if args.pick_points:
+    fig.canvas.mpl_connect('key_press_event', key_press)
+    fig.canvas.mpl_connect('button_press_event', mouse_press)
+
+if args.show_wiggle:
+
+    point_ax = plt.subplot2grid((1,3), (0,1), colspan=2)
+    wiggle_ax = plt.subplot2grid((1,3), (0,0), colspan=1)
+    wiggle_ax.invert_yaxis()
+
+else:
+
+    point_ax = plt.subplot()
+
+i = 0
+path = args.data[0]
+
+data = pymei.load(path)
+
+I = np.array([(tr.mx, tr.my, tr.hx, tr.hy, tr.cdp, tr.fof, j) for j, tr in enumerate(data)])
+
+cdp = I[:,4]
+
+M = rot.dot((I[:, 0:2]).T)
+H = rot.dot((I[:, 2:4]).T)
+
+X = M[1,:]
+Y = H[1,:]
+
+point_data = point_data + [j + (i, ) for j in zip(X, Y, *[x for x in I.T])]
+
+cax = point_ax.scatter(X, Y, marker='x', c=cdp)
+plt.colorbar(cax)
+
+plt.show()
