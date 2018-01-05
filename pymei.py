@@ -1,6 +1,6 @@
 from __future__ import division
 import numpy as np
-from ctypes import Structure, BigEndianStructure
+from ctypes import Structure, BigEndianStructure, pointer
 from ctypes import c_int32, c_uint32, c_int16, c_float, c_uint16, c_char, c_double
 from codecs import decode
 
@@ -82,6 +82,18 @@ class SEGYTraceHeader (BigEndianStructure):
                 ('iline', c_int32),
                 ('xline', c_int32),
                 ('unass', c_char*44)]
+
+    def __eq__(self, other):
+        for fld in self._fields_:
+            if getattr(self, fld[0]) != getattr(other, fld[0]):
+                return False
+        return True
+
+    def __ne__(self, other):
+        for fld in self._fields_:
+            if getattr(self, fld[0]) != getattr(other, fld[0]):
+                return True
+        return False
 
 
 class SEGYLGATraceHeader (BigEndianStructure):
@@ -292,6 +304,18 @@ class SEGYBinaryHeader (BigEndianStructure):
                 ('vpol', c_int16),
                 ('unass', c_char*340)]
 
+    def __eq__(self, other):
+        for fld in self._fields_:
+            if getattr(self, fld[0]) != getattr(other, fld[0]):
+                return False
+        return True
+
+    def __ne__(self, other):
+        for fld in self._fields_:
+            if getattr(self, fld[0]) != getattr(other, fld[0]):
+                return True
+        return False
+
 
 class SUTraceHeader(Structure):
     _fields_ = [('tracl', c_int32),
@@ -376,11 +400,25 @@ class SUTraceHeader(Structure):
                 ('shortpad', c_int16),
                 ('unass', c_int16 * 14)]
 
+    def __eq__(self, other):
+        for fld in self._fields_:
+            if getattr(self, fld[0]) != getattr(other, fld[0]):
+                return False
+        return True
+
+    def __ne__(self, other):
+        for fld in self._fields_:
+            if getattr(self, fld[0]) != getattr(other, fld[0]):
+                return True
+        return False
+
 
 class SeimicData(object):
-    def __init__(self, stream):
+    def __init__(self, stream, mode='rb'):
         if type(stream) == str:
-            self.stream = open(stream, 'rb')
+            if not 'b' in mode:
+                mode += 'b'
+            self.stream = open(stream, mode)
         else:
             self.stream = stream
 
@@ -403,8 +441,8 @@ class SeimicData(object):
 
 
 class SU(SeimicData):
-    def __init__(self, stream):
-        super(SU, self).__init__(stream)
+    def __init__(self, stream, mode='rb'):
+        super(SU, self).__init__(stream, mode)
         self.fof = 0
 
     def info(self):
@@ -414,7 +452,9 @@ class SU(SeimicData):
         self.fof = 0
         self.stream.seek(self.fof)
 
-    def readTrace(self):
+    def readTrace(self, fof=-1):
+        if fof >= 0:
+            self.stream.seek(fof)
         header = SUTraceHeader()
         size = self.stream.readinto(header)
         if size is not None and size > 0:
@@ -426,6 +466,10 @@ class SU(SeimicData):
             return Trace(header, data, fof)
         else:
             return None
+
+    def writeTrace(self, tr):
+        self.stream.write(tr.header)
+        tr.data.tofile(self.stream)
 
 
 class SEGY(SeimicData):
@@ -446,7 +490,9 @@ class SEGY(SeimicData):
         self.fof = 3200 + 400
         self.stream.seek(self.fof)
 
-    def readTrace(self):
+    def readTrace(self, fof=-1):
+        if fof >= 0:
+            self.stream.seek(fof)
         if self.binary_header.format == 1:
             return self.readTraceIBMFloat()
         elif self.binary_header.format == 2:
@@ -517,6 +563,11 @@ class Trace(object):
             self.mult = -1 / header.scalco
         else:
             self.mult = 1
+
+    def copy(self):
+        header2 = type(self.header)()
+        pointer(header2)[0] = self.header
+        return Trace(header2, np.copy(self.data), self.fof)
 
     @property
     def gx(self):
